@@ -1,36 +1,101 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 import { FlowRoute } from './flow-meta';
 
 // `data.flow` is the single source of truth for the user-flow graph AND the runtime navbar.
-// The colossus flow-graph extractor projects it directly (zero heuristics). Authoring rules
-// + lint: docs/flow-graph-convention.md + platform/flowgraph-static/verify/flow-lint.mjs.
-//
-// DEEP-LINKABLE STATE — every navigable UI state a user could leave feedback on must be
-// reachable by URL (so automated verification can land on it). Patterns:
-//   • wizard / multi-step → child routes, or a `?step=` query param the component restores from:
-//       { path: 'onboarding', loadComponent: …, data: { flow: { flowId:'onboarding', node:'onboarding' } }, children: [
-//         { path: 'profile', …, data: { flow: { flowId:'onboarding-profile', node:'onboarding-profile' } } },
-//         { path: 'connect', …, data: { flow: { flowId:'onboarding-connect', node:'onboarding-connect' } } },
-//       ]}
-//   • tabs / sub-tabs → child routes (preferred) or `?tab=`
-//   • modal / dialog → `?modal=<name>[&id=]` read on init (or a modal child route)
-//   • drawer / detail pane → `?panel=<name>&id=` or `/:id`
-//   • filtered / sorted list → bind the filter to query params (queryParamsHandling:'merge')
-// Never bury a navigable state in component-only state. Transient chrome (tooltip/hover) is exempt.
+// The colossus flow-graph extractor projects it directly (zero heuristics). Angular `data`
+// is NOT inherited by child routes — flow is repeated on each child below.
 export const routes: Routes = ([
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'login',
     loadComponent: () =>
       import('./features/login/login.component').then((m) => m.LoginComponent),
-    data: { flow: { flowId: 'login', node: 'login', entry: true, edgesTo: ['home'], label: 'Login' } },
+    data: {
+      flow: {
+        flowId: 'login',
+        node: 'login',
+        entry: true,
+        edgesTo: ['recipe-list', 'signup'],
+        label: 'Login',
+      },
+    },
   },
   {
-    path: 'home',
+    path: 'signup',
     loadComponent: () =>
-      import('./features/home/home.component').then((m) => m.HomeComponent),
+      import('./features/signup/signup.component').then((m) => m.SignupComponent),
+    data: {
+      flow: {
+        flowId: 'signup',
+        node: 'signup',
+        edgesTo: ['recipe-list', 'login'],
+        label: 'Sign up',
+      },
+    },
+  },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./shared/shell/shell.component').then((m) => m.ShellComponent),
     canActivate: [authGuard],
-    data: { flow: { flowId: 'home', node: 'home', showInNavbar: true, label: 'Home', scope: 'all' } },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/recipe-list/recipe-list.component').then(
+            (m) => m.RecipeListComponent,
+          ),
+        data: {
+          flow: {
+            flowId: 'recipe-list',
+            node: 'recipe-list',
+            showInNavbar: true,
+            label: 'Recipes',
+            scope: 'all',
+            edgesTo: ['recipe-detail', 'admin-settings', 'login'],
+          },
+        },
+      },
+      {
+        path: 'recipes/:id',
+        loadComponent: () =>
+          import('./features/recipe-detail/recipe-detail.component').then(
+            (m) => m.RecipeDetailComponent,
+          ),
+        data: {
+          flow: {
+            flowId: 'recipe-detail',
+            node: 'recipe-detail',
+            label: 'Recipe detail',
+            edgesTo: ['recipe-list'],
+          },
+        },
+      },
+      {
+        path: 'admin/settings',
+        loadComponent: () =>
+          import('./features/admin-settings/admin-settings.component').then(
+            (m) => m.AdminSettingsComponent,
+          ),
+        canActivate: [adminGuard],
+        data: {
+          flow: {
+            flowId: 'admin-settings',
+            node: 'admin-settings',
+            showInNavbar: true,
+            label: 'Admin',
+            scope: 'admin',
+            edgesTo: ['recipe-list'],
+          },
+        },
+      },
+    ],
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
+    data: { flow: { flowId: 'not-found', node: 'not-found', terminal: true, label: 'Not found' } },
   },
 ] satisfies FlowRoute[]) as Routes;

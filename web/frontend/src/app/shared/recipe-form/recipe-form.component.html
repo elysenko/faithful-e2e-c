@@ -1,0 +1,47 @@
+<form class="recipe-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <div class="field">
+    <label for="rf-title">Title</label>
+    <input
+      id="rf-title"
+      class="input"
+      type="text"
+      formControlName="title"
+      placeholder="e.g. Grandma’s Cinnamon Rolls"
+      autocomplete="off"
+    />
+    @if (invalid('title')) {
+      <span class="field-error">A title is required.</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="rf-ingredients">Ingredients <span class="hint">(one per line)</span></label>
+    <textarea
+      id="rf-ingredients"
+      class="textarea"
+      formControlName="ingredients"
+      placeholder="2 cups flour&#10;1 tsp salt&#10;3 eggs"
+    ></textarea>
+    @if (invalid('ingredients')) {
+      <span class="field-error">Add at least one ingredient.</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="rf-steps">Steps <span class="hint">(one per line)</span></label>
+    <textarea
+      id="rf-steps"
+      class="textarea"
+      formControlName="steps"
+      placeholder="Preheat the oven to 190°C.&#10;Mix the dry ingredients.&#10;Bake for 20 minutes."
+    ></textarea>
+    @if (invalid('steps')) {
+      <span class="field-error">Add at least one step.</span>
+    }
+  </div>
+
+  <div class="recipe-form__actions">
+    <button type="button" class="btn btn-secondary" (click)="cancel.emit()">Cancel</button>
+    <button type="submit" class="btn btn-primary">{{ submitLabel }}</button>
+  </div>
+</form>

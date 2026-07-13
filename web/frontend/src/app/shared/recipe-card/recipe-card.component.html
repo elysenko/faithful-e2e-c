@@ -1,0 +1,19 @@
+<a class="recipe-card" [routerLink]="['/recipes', recipe.id]">
+  <div class="recipe-card__top">
+    <h3 class="recipe-card__title">{{ recipe.title }}</h3>
+    <app-favorite-toggle
+      [favorite]="recipe.favorite"
+      (toggle)="favorite.emit()"
+    ></app-favorite-toggle>
+  </div>
+
+  <p class="recipe-card__preview">{{ preview }}</p>
+
+  <div class="recipe-card__meta">
+    <span class="recipe-card__pill">{{ ingredientCount }} ingredients</span>
+    <span class="recipe-card__pill">{{ stepCount }} steps</span>
+    @if (recipe.favorite) {
+      <span class="recipe-card__pill recipe-card__pill--fav">★ Favorite</span>
+    }
+  </div>
+</a>

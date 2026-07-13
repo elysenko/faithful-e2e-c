@@ -5,6 +5,7 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-  template: '<router-outlet />'
+  // data-testid="app-ready" is the post-deploy render gate's readiness landmark.
+  template: '<div data-testid="app-ready"><router-outlet /></div>',
 })
 export class AppComponent {}

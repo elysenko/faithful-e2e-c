@@ -1,0 +1,76 @@
+<section class="list">
+  <div class="list__head">
+    <div>
+      <h1 class="list__title">My Recipes</h1>
+      <p class="list__count">{{ totalCount() }} saved · {{ visibleRecipes().length }} shown</p>
+    </div>
+    <button class="btn btn-primary list__add" type="button" (click)="openAddModal()">
+      <span aria-hidden="true">＋</span> Add recipe
+    </button>
+  </div>
+
+  <div class="list__controls">
+    <div class="searchbox">
+      <span class="searchbox__icon" aria-hidden="true">🔍</span>
+      <input
+        class="searchbox__input"
+        type="search"
+        [value]="searchText"
+        (input)="onSearchInput($any($event.target).value)"
+        placeholder="Search recipes by title…"
+        aria-label="Search recipes by title"
+      />
+      @if (searchText) {
+        <button class="searchbox__clear" type="button" (click)="clearSearch()" aria-label="Clear search">×</button>
+      }
+    </div>
+
+    <button
+      class="filter-toggle"
+      type="button"
+      [class.filter-toggle--on]="favoritesActive"
+      (click)="toggleFavoritesFilter()"
+      [attr.aria-pressed]="favoritesActive"
+    >
+      <span aria-hidden="true">★</span> Favorites
+    </button>
+  </div>
+
+  @if (visibleRecipes().length > 0) {
+    <div class="grid">
+      @for (recipe of visibleRecipes(); track recipe.id) {
+        <app-recipe-card [recipe]="recipe" (favorite)="onFavorite(recipe.id)"></app-recipe-card>
+      }
+    </div>
+  } @else {
+    <app-empty-state
+      [icon]="hasQuery() ? '🔍' : '🍽️'"
+      [title]="hasQuery() ? 'No recipes match' : 'Your recipe box is empty'"
+      [message]="hasQuery()
+        ? 'Try a different search term or clear the favorites filter.'
+        : 'Add your first recipe to get started.'"
+    >
+      @if (!hasQuery()) {
+        <button class="btn btn-primary" type="button" (click)="openAddModal()">Add your first recipe</button>
+      }
+    </app-empty-state>
+  }
+</section>
+
+@if (modalOpen()) {
+  <div class="modal" (click)="closeModal()">
+    <div class="modal__panel" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Add recipe">
+      <div class="modal__head">
+        <h2 class="modal__title">Add a recipe</h2>
+        <button class="modal__close" type="button" (click)="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal__body">
+        <app-recipe-form
+          submitLabel="Save recipe"
+          (save)="createRecipe($event)"
+          (cancel)="closeModal()"
+        ></app-recipe-form>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,73 @@
+@if (recipe(); as r) {
+  <div class="detail">
+    <a class="detail__back" [routerLink]="['/']">← All recipes</a>
+
+    @if (editing()) {
+      <div class="detail__card card">
+        <h1 class="detail__edit-title">Edit recipe</h1>
+        <app-recipe-form
+          [recipe]="r"
+          submitLabel="Save changes"
+          (save)="saveEdit($event)"
+          (cancel)="cancelEdit()"
+        ></app-recipe-form>
+      </div>
+    } @else {
+      <div class="detail__card card">
+        <div class="detail__head">
+          <h1 class="detail__title">{{ r.title }}</h1>
+          <app-favorite-toggle
+            [favorite]="r.favorite"
+            size="lg"
+            (toggle)="toggleFavorite()"
+          ></app-favorite-toggle>
+        </div>
+
+        <div class="detail__actions">
+          <button class="btn btn-secondary" type="button" (click)="startEdit()">✎ Edit</button>
+          <button class="btn btn-ghost detail__delete" type="button" (click)="askDelete()">🗑 Delete</button>
+        </div>
+
+        <div class="detail__grid">
+          <section class="detail__section">
+            <h2 class="detail__subtitle">Ingredients</h2>
+            <ul class="detail__ingredients">
+              @for (line of ingredientLines(); track $index) {
+                <li>{{ line }}</li>
+              }
+            </ul>
+          </section>
+
+          <section class="detail__section">
+            <h2 class="detail__subtitle">Steps</h2>
+            <ol class="detail__steps">
+              @for (line of stepLines(); track $index) {
+                <li>{{ line }}</li>
+              }
+            </ol>
+          </section>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (confirmingDelete()) {
+    <div class="modal" (click)="cancelDelete()">
+      <div class="modal__panel" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <h2 class="modal__title">Delete this recipe?</h2>
+        <p class="modal__text">“{{ r.title }}” will be permanently removed. This cannot be undone.</p>
+        <div class="modal__buttons">
+          <button class="btn btn-secondary" type="button" (click)="cancelDelete()">Cancel</button>
+          <button class="btn btn-danger" type="button" (click)="confirmDelete()">Delete recipe</button>
+        </div>
+      </div>
+    </div>
+  }
+} @else {
+  <div class="notfound">
+    <div class="notfound__icon" aria-hidden="true">🍽️</div>
+    <h1 class="notfound__title">Recipe not found</h1>
+    <p class="notfound__text">This recipe may have been deleted or never existed.</p>
+    <a class="btn btn-primary" [routerLink]="['/']">Back to my recipes</a>
+  </div>
+}

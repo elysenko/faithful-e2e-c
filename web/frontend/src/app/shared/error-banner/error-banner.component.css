@@ -1,0 +1,36 @@
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.error-banner__icon {
+  font-size: var(--text-lg);
+}
+
+.error-banner__text {
+  flex: 1;
+}
+
+.error-banner__close {
+  background: transparent;
+  border: none;
+  color: var(--color-danger);
+  font-size: var(--text-xl);
+  line-height: 1;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: var(--radius-sm);
+}
+
+.error-banner__close:hover {
+  background: rgba(185, 28, 28, 0.12);
+}

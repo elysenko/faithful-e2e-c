@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="fav"
+  [class.fav--on]="favorite"
+  [class.fav--lg]="size === 'lg'"
+  (click)="onClick($event)"
+  [attr.aria-pressed]="favorite"
+  [attr.aria-label]="favorite ? 'Remove from favorites' : 'Add to favorites'"
+>
+  <span class="fav__star" aria-hidden="true">{{ favorite ? '★' : '☆' }}</span>
+</button>

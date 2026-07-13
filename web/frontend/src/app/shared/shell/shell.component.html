@@ -1,0 +1,61 @@
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" [routerLink]="['/']">
+      <span class="brand__mark" aria-hidden="true">🥘</span>
+      <span class="brand__name">FaithfulC</span>
+      <span class="brand__sub">Recipe Box</span>
+    </a>
+
+    <nav class="topnav" aria-label="Primary">
+      <a class="topnav__link" [routerLink]="['/']" [queryParams]="{}" routerLinkActive="topnav__link--active" [routerLinkActiveOptions]="{ exact: true }">Recipes</a>
+      <a class="topnav__link" [routerLink]="['/']" [queryParams]="{ fav: 1 }">Favorites</a>
+      @if (isAdmin()) {
+        <a class="topnav__link" [routerLink]="['/admin/settings']" routerLinkActive="topnav__link--active">Admin</a>
+      }
+    </nav>
+
+    <div class="topbar__account">
+      @if (user(); as u) {
+        <span class="topbar__user">
+          {{ u.username }}
+          @if (u.role === 'admin') {
+            <span class="badge badge-admin">admin</span>
+          }
+        </span>
+      }
+      <button class="btn btn-ghost topbar__logout" type="button" (click)="logout()">Log out</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="content__inner">
+      <app-error-banner></app-error-banner>
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <nav class="bottomnav" aria-label="Mobile">
+    <a class="bottomnav__item" [routerLink]="['/']" [queryParams]="{}" routerLinkActive="bottomnav__item--active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="bottomnav__icon" aria-hidden="true">📖</span>
+      <span class="bottomnav__label">Recipes</span>
+    </a>
+    <a class="bottomnav__item" [routerLink]="['/']" [queryParams]="{ fav: 1 }">
+      <span class="bottomnav__icon" aria-hidden="true">★</span>
+      <span class="bottomnav__label">Favorites</span>
+    </a>
+    <a class="bottomnav__item bottomnav__item--add" [routerLink]="['/']" [queryParams]="{ modal: 'new' }">
+      <span class="bottomnav__icon" aria-hidden="true">＋</span>
+      <span class="bottomnav__label">Add</span>
+    </a>
+    @if (isAdmin()) {
+      <a class="bottomnav__item" [routerLink]="['/admin/settings']" routerLinkActive="bottomnav__item--active">
+        <span class="bottomnav__icon" aria-hidden="true">⚙</span>
+        <span class="bottomnav__label">Admin</span>
+      </a>
+    }
+    <button class="bottomnav__item" type="button" (click)="logout()">
+      <span class="bottomnav__icon" aria-hidden="true">⎋</span>
+      <span class="bottomnav__label">Log out</span>
+    </button>
+  </nav>
+</div>

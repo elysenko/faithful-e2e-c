@@ -1,0 +1,68 @@
+<div class="auth">
+  <div class="auth__card card">
+    <div class="auth__brand">
+      <span class="auth__mark" aria-hidden="true">🥘</span>
+      <h1 class="auth__title">Create your recipe box</h1>
+      <p class="auth__tagline">Save, search and favorite your recipes</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="field">
+        <label for="signup-username">Username</label>
+        <input
+          id="signup-username"
+          class="input"
+          type="text"
+          formControlName="username"
+          autocomplete="username"
+          placeholder="Choose a username"
+        />
+        @if (invalid('username')) {
+          <span class="field-error">Username must be at least 3 characters.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="signup-password">Password</label>
+        <input
+          id="signup-password"
+          class="input"
+          type="password"
+          formControlName="password"
+          autocomplete="new-password"
+          placeholder="At least 6 characters"
+        />
+        @if (invalid('password')) {
+          <span class="field-error">Password must be at least 6 characters.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="signup-confirm">Confirm password</label>
+        <input
+          id="signup-confirm"
+          class="input"
+          type="password"
+          formControlName="confirm"
+          autocomplete="new-password"
+          placeholder="Re-enter your password"
+        />
+        @if (mismatch) {
+          <span class="field-error">Passwords do not match.</span>
+        }
+      </div>
+
+      @if (errorMessage) {
+        <div class="auth__error" role="alert">{{ errorMessage }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="loading">
+        {{ loading ? 'Creating account…' : 'Sign up' }}
+      </button>
+    </form>
+
+    <p class="auth__switch">
+      Already have an account? <a [routerLink]="['/login']">Log in</a>
+    </p>
+  </div>
+</div>

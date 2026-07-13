@@ -1,0 +1,54 @@
+<section class="admin">
+  <div class="admin__head">
+    <div>
+      <h1 class="admin__title">Admin · Service Settings</h1>
+      <p class="admin__sub">{{ configuredCount() }} of {{ settings().length }} keys configured</p>
+    </div>
+    <a class="btn btn-ghost" [routerLink]="['/']">← Back to recipes</a>
+  </div>
+
+  @for (group of groups; track group.id) {
+    <div class="service card">
+      <div class="service__head">
+        <div class="service__meta">
+          <h2 class="service__name">{{ group.name }}</h2>
+          <p class="service__desc">{{ group.description }}</p>
+        </div>
+        @if (groupConfigured(group)) {
+          <span class="badge badge-success">● Configured</span>
+        } @else {
+          <span class="badge badge-muted">○ Not configured</span>
+        }
+      </div>
+
+      <div class="service__keys">
+        @for (key of group.keys; track key) {
+          <div class="keyrow">
+            <div class="keyrow__info">
+              <code class="keyrow__key">{{ key }}</code>
+              @if (settingFor(key)?.configured) {
+                <span class="keyrow__value">{{ settingFor(key)?.value }}</span>
+              } @else {
+                <span class="keyrow__value keyrow__value--empty">not set</span>
+              }
+            </div>
+            <div class="keyrow__form">
+              <input
+                class="input keyrow__input"
+                type="password"
+                [name]="key"
+                [(ngModel)]="drafts[key]"
+                placeholder="Enter new value"
+                autocomplete="off"
+              />
+              <button class="btn btn-primary keyrow__save" type="button" (click)="save(key)">Save</button>
+            </div>
+            @if (savedKey === key) {
+              <p class="keyrow__saved">✓ Saved</p>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

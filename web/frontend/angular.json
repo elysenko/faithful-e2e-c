@@ -10,10 +10,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/frontend",
+            "outputPath": { "base": "dist/frontend", "browser": "" },
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
+            "assets": [],
+            "styles": ["src/styles.css"],
             "fileReplacements": [
               {
                 "replace": "src/environments/environment.ts",
@@ -23,6 +26,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/faithful-e2e-c/",
               "optimization": {
                 "scripts": true,
                 "styles": { "minify": true, "inlineCritical": false },
@@ -35,12 +39,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "16kB"
                 }
               ]
             },

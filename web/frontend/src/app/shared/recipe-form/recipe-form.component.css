@@ -1,0 +1,26 @@
+.recipe-form {
+  display: block;
+}
+
+.hint {
+  font-weight: 400;
+  color: var(--color-text-faint);
+}
+
+.recipe-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.recipe-form__actions .btn {
+  flex: 1;
+}
+
+@media (min-width: 560px) {
+  .recipe-form__actions .btn {
+    flex: 0 0 auto;
+    min-width: 130px;
+  }
+}

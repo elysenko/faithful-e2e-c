@@ -1,0 +1,104 @@
+.auth {
+  min-height: 100svh;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5) var(--space-4);
+  background:
+    radial-gradient(circle at 20% 15%, var(--color-primary-soft), transparent 45%),
+    radial-gradient(circle at 85% 90%, var(--color-accent-soft), transparent 40%),
+    var(--color-bg);
+}
+
+.auth__card {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-6) var(--space-5);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth__brand {
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.auth__mark {
+  font-size: 44px;
+}
+
+.auth__title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--color-primary);
+  margin-top: var(--space-1);
+}
+
+.auth__tagline {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.auth__error {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.auth__hint {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: var(--space-4) 0 0;
+}
+
+.auth__divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--color-text-faint);
+  font-size: var(--text-xs);
+  margin: var(--space-4) 0;
+}
+
+.auth__divider::before,
+.auth__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.auth__divider span {
+  padding: 0 var(--space-3);
+}
+
+.auth__demo {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  background: transparent;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.auth__demo:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.auth__switch {
+  text-align: center;
+  margin: var(--space-5) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
