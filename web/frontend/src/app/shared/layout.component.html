@@ -1,0 +1,50 @@
+<!-- SMOKE_MARKER: FaithfulC -->
+<header class="app-header no-print">
+  <a class="brand" routerLink="/">
+    <span class="brand-mark">🍲</span>
+    <span class="brand-name">FaithfulC</span>
+  </a>
+
+  <nav class="top-nav">
+    @for (item of nav(); track item.link) {
+      <a
+        [routerLink]="item.link"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: !!item.exact }"
+        class="top-nav-link"
+      >{{ item.label }}</a>
+    }
+  </nav>
+
+  <div class="header-right">
+    <span class="user-chip">
+      <span class="role-dot" [class.admin]="auth.isAdmin()"></span>
+      <span class="user-name">{{ userName() }}</span>
+      <span class="role-tag">{{ roleLabel() }}</span>
+    </span>
+    <button type="button" class="btn btn-outline btn-sm" (click)="logout()">Sign out</button>
+  </div>
+</header>
+
+<main class="app-main">
+  <router-outlet />
+</main>
+
+<!-- Bottom tab bar — mobile only -->
+<nav class="bottom-nav no-print" aria-label="Primary">
+  @for (item of bottomNav(); track item.link) {
+    <a
+      [routerLink]="item.link"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: !!item.exact }"
+      class="bottom-nav-item"
+    >
+      <span class="bn-icon" aria-hidden="true">{{ item.icon }}</span>
+      <span class="bn-label">{{ item.label }}</span>
+    </a>
+  }
+  <button type="button" class="bottom-nav-item" (click)="logout()">
+    <span class="bn-icon" aria-hidden="true">⎋</span>
+    <span class="bn-label">Sign out</span>
+  </button>
+</nav>

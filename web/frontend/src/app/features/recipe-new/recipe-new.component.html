@@ -1,0 +1,15 @@
+<div class="page page-narrow">
+  <div class="page-head">
+    <a routerLink="/" class="btn btn-ghost btn-sm back">← Back</a>
+    <h1>Add a recipe</h1>
+    <p class="sub">Title, ingredients and steps are all required.</p>
+  </div>
+
+  <app-recipe-form
+    submitLabel="Add recipe"
+    [submitting]="submitting()"
+    [serverError]="serverError()"
+    (save)="onSave($event)"
+    (cancelForm)="onCancel()"
+  />
+</div>

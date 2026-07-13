@@ -1,0 +1,69 @@
+<div class="page">
+  <div class="page-head">
+    <h1>My Recipes</h1>
+    <span class="spacer"></span>
+    <a routerLink="/recipes/new" class="btn btn-primary add-desktop">➕ Add recipe</a>
+  </div>
+
+  <div class="toolbar">
+    <div class="search">
+      <span class="search-icon" aria-hidden="true">🔍</span>
+      <input
+        type="search"
+        name="search"
+        placeholder="Search recipes by title…"
+        [ngModel]="query()"
+        (ngModelChange)="onSearch($event)"
+        aria-label="Search recipes by title"
+      />
+      @if (query()) {
+        <button type="button" class="clear" (click)="clearSearch()" aria-label="Clear search">✕</button>
+      }
+    </div>
+    <button
+      type="button"
+      class="btn btn-sm fav-filter"
+      [class.active]="favoritesOnly()"
+      (click)="toggleFavoritesFilter()"
+    >
+      <span aria-hidden="true">{{ favoritesOnly() ? '★' : '☆' }}</span>
+      Favorites ({{ favoriteCount() }})
+    </button>
+  </div>
+
+  @if (filtered().length > 0) {
+    <div class="grid">
+      @for (recipe of filtered(); track recipe.id) {
+        <button type="button" class="recipe-card card" (click)="open(recipe)">
+          <span class="rc-emoji" aria-hidden="true">🍽️</span>
+          <span class="rc-title">{{ recipe.title }}</span>
+          <span
+            class="rc-fav"
+            [class.on]="recipe.isFavorite"
+            (click)="toggleFavorite(recipe, $event)"
+            [attr.aria-label]="recipe.isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+            role="button"
+          >{{ recipe.isFavorite ? '★' : '☆' }}</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="state empty card">
+      <span class="state-icon" aria-hidden="true">🍳</span>
+      @if (query() || favoritesOnly()) {
+        <h3>No recipes match your filters</h3>
+        <p class="muted">Try a different search term or clear the favorites filter.</p>
+        <button type="button" class="btn btn-outline" (click)="resetFilters()">
+          Reset filters
+        </button>
+      } @else {
+        <h3>Your recipe box is empty</h3>
+        <p class="muted">Add your first recipe to get cooking.</p>
+        <a routerLink="/recipes/new" class="btn btn-primary">➕ Add your first recipe</a>
+      }
+    </div>
+  }
+</div>
+
+<!-- Mobile floating add button keeps the primary action in the thumb zone -->
+<a routerLink="/recipes/new" class="fab no-print" aria-label="Add recipe">➕</a>

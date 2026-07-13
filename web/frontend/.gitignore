@@ -1,0 +1,6 @@
+# Angular / Node build artifacts — never commit these to the branch.
+/node_modules
+/dist
+/.angular
+/tmp
+*.log

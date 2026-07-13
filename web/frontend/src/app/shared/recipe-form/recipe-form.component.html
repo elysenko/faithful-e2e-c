@@ -1,0 +1,57 @@
+<form class="recipe-form card card-pad" (ngSubmit)="submit()">
+  @if (serverError) {
+    <p class="error banner">{{ serverError }}</p>
+  }
+
+  <div class="field">
+    <label for="title">Title <span class="req">*</span></label>
+    <input
+      id="title"
+      name="title"
+      type="text"
+      [(ngModel)]="title"
+      [class.field-error]="titleInvalid"
+      placeholder="e.g. Weeknight Tomato Basil Pasta"
+    />
+    @if (titleInvalid) {
+      <span class="error">A title is required.</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="ingredients">Ingredients <span class="req">*</span></label>
+    <textarea
+      id="ingredients"
+      name="ingredients"
+      rows="6"
+      [(ngModel)]="ingredients"
+      [class.field-error]="ingredientsInvalid"
+      placeholder="One per line — e.g.&#10;400g spaghetti&#10;2 cups cherry tomatoes&#10;Fresh basil"
+    ></textarea>
+    @if (ingredientsInvalid) {
+      <span class="error">List at least one ingredient.</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="steps">Steps <span class="req">*</span></label>
+    <textarea
+      id="steps"
+      name="steps"
+      rows="8"
+      [(ngModel)]="steps"
+      [class.field-error]="stepsInvalid"
+      placeholder="Describe how to make it, step by step."
+    ></textarea>
+    @if (stepsInvalid) {
+      <span class="error">Add at least one step.</span>
+    }
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="submitting">Cancel</button>
+    <button type="submit" class="btn btn-primary" [disabled]="submitting">
+      {{ submitting ? 'Saving…' : submitLabel }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,70 @@
+<div class="page page-narrow">
+  <div class="page-head">
+    <a routerLink="/" class="btn btn-ghost btn-sm back">← All recipes</a>
+  </div>
+
+  @if (recipe(); as r) {
+    <article class="detail card card-pad">
+      <header class="detail-head">
+        <div class="detail-title">
+          <span class="rc-emoji" aria-hidden="true">🍽️</span>
+          <h1>{{ r.title }}</h1>
+        </div>
+        <button
+          type="button"
+          class="fav-btn"
+          [class.on]="r.isFavorite"
+          (click)="toggleFavorite()"
+          [attr.aria-label]="r.isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+        >{{ r.isFavorite ? '★' : '☆' }}</button>
+      </header>
+
+      @if (r.isFavorite) {
+        <span class="badge badge-brand fav-tag">★ Favorite</span>
+      }
+
+      <section class="block">
+        <h2>Ingredients</h2>
+        <ul class="ingredients">
+          @for (line of ingredientLines(); track $index) {
+            <li>{{ line }}</li>
+          }
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2>Steps</h2>
+        <ol class="steps">
+          @for (line of stepLines(); track $index) {
+            <li>{{ line }}</li>
+          }
+        </ol>
+      </section>
+
+      <footer class="detail-actions">
+        <button type="button" class="btn btn-outline" (click)="edit()">✏️ Edit</button>
+        <button type="button" class="btn btn-danger" (click)="askDelete()">🗑️ Delete</button>
+      </footer>
+    </article>
+  } @else {
+    <div class="state card card-pad">
+      <span class="state-icon" aria-hidden="true">🔎</span>
+      <h2>Recipe not found</h2>
+      <p class="muted">This recipe may have been deleted, or the link is incorrect.</p>
+      <a routerLink="/" class="btn btn-primary">Back to my recipes</a>
+    </div>
+  }
+</div>
+
+@if (confirmingDelete()) {
+  <div class="modal-scrim" (click)="cancelDelete()">
+    <div class="modal card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Delete recipe">
+      <h3>Delete this recipe?</h3>
+      <p class="muted">“{{ recipe()?.title }}” will be permanently removed. This can’t be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete recipe</button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,45 @@
+<div class="auth-shell">
+  <div class="auth-card card">
+    <div class="auth-brand">
+      <span class="brand-mark">🍲</span>
+      <span class="brand-name">FaithfulC</span>
+    </div>
+    <h1>Welcome back</h1>
+    <p class="muted">Sign in to open your recipe box — search, favorite and cook.</p>
+
+    <form (ngSubmit)="submit()">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" [(ngModel)]="email"
+               autocomplete="email" placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" [(ngModel)]="password"
+               autocomplete="current-password" placeholder="••••••••" />
+      </div>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
+        {{ submitting() ? 'Signing in…' : 'Log in' }}
+      </button>
+    </form>
+
+    <p class="hint center demo-creds">
+      Demo account · <span class="mono">demo&#64;faithfulc.app</span> / <span class="mono">demodemo1</span>
+    </p>
+
+    <p class="auth-alt">
+      New to FaithfulC? <a routerLink="/signup">Create an account</a>
+    </p>
+
+    <div class="demo">
+      <button type="button" class="btn btn-outline btn-block" (click)="demo()">
+        Skip login — Demo Mode
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="page page-narrow">
+  <div class="page-head">
+    <h1>Settings</h1>
+    <p class="sub">Configure the backing services FaithfulC connects to. Admins only.</p>
+  </div>
+
+  <div class="stack">
+    @for (group of groups(); track group.service) {
+      <section class="card card-pad service">
+        <header class="service-head">
+          <span class="service-icon" aria-hidden="true">{{ group.icon }}</span>
+          <div class="service-title">
+            <h2>{{ group.label }}</h2>
+            <p class="hint">{{ group.description }}</p>
+          </div>
+          @if (isConfigured(group)) {
+            <span class="badge badge-ok">● Configured</span>
+          } @else {
+            <span class="badge badge-warn">● Not configured</span>
+          }
+        </header>
+
+        <form (ngSubmit)="save(group)">
+          @for (setting of group.settings; track setting.key) {
+            <div class="field">
+              <label [attr.for]="setting.key">{{ setting.label }}</label>
+              <input
+                [id]="setting.key"
+                [name]="setting.key"
+                type="text"
+                [(ngModel)]="setting.value"
+                [placeholder]="'Enter ' + setting.label.toLowerCase()"
+                autocomplete="off"
+              />
+              <span class="hint mono">{{ setting.key }}</span>
+            </div>
+          }
+
+          <div class="service-actions">
+            @if (savedService() === group.service) {
+              <span class="saved">✓ Saved</span>
+            }
+            <span class="spacer"></span>
+            <button type="submit" class="btn btn-primary">Save {{ group.label }}</button>
+          </div>
+        </form>
+      </section>
+    }
+  </div>
+</div>

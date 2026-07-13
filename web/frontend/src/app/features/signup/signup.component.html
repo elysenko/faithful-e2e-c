@@ -1,0 +1,40 @@
+<div class="auth-shell">
+  <div class="auth-card card">
+    <div class="auth-brand">
+      <span class="brand-mark">🍲</span>
+      <span class="brand-name">FaithfulC</span>
+    </div>
+    <h1>Create your recipe box</h1>
+    <p class="muted">Save, search and favorite your recipes — all in one place.</p>
+
+    <form (ngSubmit)="submit()">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" [(ngModel)]="email"
+               autocomplete="email" placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" [(ngModel)]="password"
+               autocomplete="new-password" placeholder="At least 8 characters" />
+      </div>
+      <div class="field">
+        <label for="confirm">Confirm password</label>
+        <input id="confirm" type="password" name="confirm" [(ngModel)]="confirm"
+               autocomplete="new-password" placeholder="Re-enter your password" />
+      </div>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
+        {{ submitting() ? 'Creating account…' : 'Sign up' }}
+      </button>
+    </form>
+
+    <p class="auth-alt">
+      Already have an account? <a routerLink="/login">Log in</a>
+    </p>
+  </div>
+</div>

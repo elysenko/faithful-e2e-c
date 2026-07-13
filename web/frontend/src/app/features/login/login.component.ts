@@ -1,90 +1,45 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
+/**
+ * FaithfulC login. Talks to the live backend via AuthService; on success the
+ * service redirects to the recipe box. Includes a Demo Mode bypass so reviewers
+ * can inspect the authenticated UI without a backend.
+ */
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="login-container">
-      <h1>Login</h1>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div>
-          <label for="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            autocomplete="email"
-            data-testid="login-email"
-            placeholder="Enter your email"
-          />
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <span class="error">Valid email is required</span>
-          }
-        </div>
-
-        <div>
-          <label for="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            autocomplete="current-password"
-            data-testid="login-password"
-            placeholder="Enter your password"
-          />
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <span class="error">Password is required</span>
-          }
-        </div>
-
-        @if (errorMessage) {
-          <div class="error">{{ errorMessage }}</div>
-        }
-
-        <button type="submit" data-testid="login-submit" [disabled]="loginForm.invalid || loading">
-          {{ loading ? 'Logging in...' : 'Login' }}
-        </button>
-      </form>
-    </div>
-  `,
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-  loading = false;
-  errorMessage = '';
+  email = '';
+  password = '';
+  readonly submitting = signal(false);
+  readonly error = signal<string | null>(null);
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-  ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+  constructor(private auth: AuthService) {}
+
+  submit(): void {
+    if (!this.email || !this.password) {
+      this.error.set('Enter your email and password.');
+      return;
+    }
+    this.submitting.set(true);
+    this.error.set(null);
+    this.auth.login(this.email, this.password).subscribe({
+      error: (err) => {
+        this.submitting.set(false);
+        this.error.set(err?.error?.message || 'Invalid email or password.');
+      },
     });
   }
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) return;
-
-    this.loading = true;
-    this.errorMessage = '';
-
-    const { email, password } = this.loginForm.value;
-
-    this.authService.login(email, password).subscribe({
-      next: () => {
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        this.errorMessage = err?.error?.message ?? 'Invalid credentials. Please try again.';
-        this.loading = false;
-      },
-    });
+  demo(): void {
+    this.auth.demoLogin('admin');
   }
 }

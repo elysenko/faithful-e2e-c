@@ -1,0 +1,24 @@
+<div class="page page-narrow">
+  <div class="page-head">
+    <a [routerLink]="['/recipes', id()]" class="btn btn-ghost btn-sm back">← Back to recipe</a>
+    <h1>Edit recipe</h1>
+  </div>
+
+  @if (formValue(); as value) {
+    <app-recipe-form
+      submitLabel="Save changes"
+      [value]="value"
+      [submitting]="submitting()"
+      [serverError]="serverError()"
+      (save)="onSave($event)"
+      (cancelForm)="onCancel()"
+    />
+  } @else {
+    <div class="state card card-pad">
+      <span class="state-icon" aria-hidden="true">🔎</span>
+      <h2>Recipe not found</h2>
+      <p class="muted">We couldn’t find that recipe to edit.</p>
+      <a routerLink="/" class="btn btn-primary">Back to my recipes</a>
+    </div>
+  }
+</div>

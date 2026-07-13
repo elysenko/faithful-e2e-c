@@ -1,0 +1,16 @@
+{
+  "postgres": {
+    "host": "postgres-postgresql.colossus-faithful-e2e-c.svc.cluster.local",
+    "port": 5432,
+    "user": "postgres",
+    "password": "f_GctNSt0wRb_lqyx-0W3TSi",
+    "database": "app",
+    "url": "postgresql://postgres:f_GctNSt0wRb_lqyx-0W3TSi@postgres-postgresql.colossus-faithful-e2e-c.svc.cluster.local:5432/app"
+  },
+  "minio": {
+    "endpoint": "http://minio.colossus-faithful-e2e-c.svc.cluster.local:9000",
+    "accessKey": "admin",
+    "secretKey": "CyapMmP_mb89fAB2bF-1Z6L7",
+    "bucket": "app-uploads"
+  }
+}

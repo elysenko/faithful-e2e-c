@@ -1,0 +1,46 @@
+/* ============================================================
+   FaithfulC global stylesheet — supplemental layout primitives that build on
+   src/styles/tokens.css (which owns tokens + base buttons/fields/cards/badges).
+   Reference design tokens via var(--token-name); never hardcode hex.
+   ============================================================ */
+
+p { margin: 0 0 var(--space-3); }
+h1, h2, h3, h4 { line-height: 1.25; }
+
+/* ---- Page scaffolding ---- */
+.page {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4)
+           calc(var(--bottomnav-h) + var(--safe-bottom) + var(--space-5));
+}
+.page-narrow { max-width: 680px; }
+
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+.page-head h1 { margin: 0; font-size: var(--fs-xl); }
+.page-head .sub { color: var(--color-muted); font-size: var(--fs-sm); width: 100%; }
+
+.card-pad { padding: var(--space-5); }
+.hint { font-size: var(--fs-xs); color: var(--color-muted); }
+.center { text-align: center; }
+.row-wrap { flex-wrap: wrap; }
+
+/* ---- Responsive card grid (auto-fill keeps 375px safe) ---- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.state-error { color: var(--color-danger); }
+
+@media print {
+  .no-print { display: none !important; }
+}
