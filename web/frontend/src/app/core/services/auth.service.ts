@@ -50,19 +50,15 @@ export class AuthService {
       );
   }
 
-  /** One-click demo login using the seeded demo account. */
-  demoLogin(): void {
-    const username = 'demo';
-    const password = 'demo1234';
-    this.login(username, password).subscribe({
-      next: () => this.router.navigate(['/']),
-      error: () => {
-        // Fall back to a local session so reviewers still reach the UI shell
-        // even if the demo user has not been seeded yet.
-        this.setSession({ id: 0, username, role: 'admin' }, 'demo-fallback-token');
-        this.router.navigate(['/']);
-      },
-    });
+  /**
+   * One-click demo login using the seeded demo account. Returns the login
+   * observable so the caller (LoginComponent) can drive navigation on success
+   * and surface the real error on failure — no local fallback session, so a
+   * 503 flows through the HTTP interceptor's error banner instead of masking a
+   * DB outage with a fake token.
+   */
+  demoLogin(): Observable<void> {
+    return this.login('demo', 'demo1234');
   }
 
   logout(): void {

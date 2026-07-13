@@ -1,4 +1,7 @@
 <form class="recipe-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  @if (serverError) {
+    <div class="form-error" role="alert" data-testid="recipe-form-error">{{ serverError }}</div>
+  }
   <div class="field">
     <label for="rf-title">Title</label>
     <input
@@ -11,6 +14,8 @@
     />
     @if (invalid('title')) {
       <span class="field-error">A title is required.</span>
+    } @else if (serverFieldError('title')) {
+      <span class="field-error">{{ serverFieldError('title') }}</span>
     }
   </div>
 
@@ -24,6 +29,8 @@
     ></textarea>
     @if (invalid('ingredients')) {
       <span class="field-error">Add at least one ingredient.</span>
+    } @else if (serverFieldError('ingredients')) {
+      <span class="field-error">{{ serverFieldError('ingredients') }}</span>
     }
   </div>
 
@@ -37,6 +44,8 @@
     ></textarea>
     @if (invalid('steps')) {
       <span class="field-error">Add at least one step.</span>
+    } @else if (serverFieldError('steps')) {
+      <span class="field-error">{{ serverFieldError('steps') }}</span>
     }
   </div>
 

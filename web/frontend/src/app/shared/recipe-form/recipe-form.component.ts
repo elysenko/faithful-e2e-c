@@ -13,6 +13,10 @@ import { Recipe, RecipeInput } from '../../core/models';
 export class RecipeFormComponent implements OnInit {
   @Input() recipe: Recipe | null = null;
   @Input() submitLabel = 'Save recipe';
+  /** Form-level message from the server (e.g. a 400 validation summary). */
+  @Input() serverError: string | null = null;
+  /** Per-field server messages keyed by control name (title/ingredients/steps). */
+  @Input() fieldErrors: Record<string, string> | null = null;
   @Output() save = new EventEmitter<RecipeInput>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -20,6 +24,11 @@ export class RecipeFormComponent implements OnInit {
   submitted = false;
 
   constructor(private fb: FormBuilder) {}
+
+  /** Server-provided error for a specific field, if any. */
+  serverFieldError(control: string): string | null {
+    return this.fieldErrors?.[control] ?? null;
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({

@@ -8,6 +8,8 @@
         <app-recipe-form
           [recipe]="r"
           submitLabel="Save changes"
+          [serverError]="formError()"
+          [fieldErrors]="formFieldErrors()"
           (save)="saveEdit($event)"
           (cancel)="cancelEdit()"
         ></app-recipe-form>

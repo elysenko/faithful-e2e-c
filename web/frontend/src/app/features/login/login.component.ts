@@ -47,6 +47,19 @@ export class LoginComponent {
   }
 
   demoMode(): void {
-    this.auth.demoLogin();
+    this.loading = true;
+    this.errorMessage = '';
+    this.auth.demoLogin().subscribe({
+      next: () => this.router.navigate(['/']),
+      error: (err: { status?: number }) => {
+        this.errorMessage =
+          err?.status === 401
+            ? 'Invalid credentials'
+            : err?.status === 503
+              ? 'Service temporarily unavailable. Please try again.'
+              : 'Unable to sign in. Please try again.';
+        this.loading = false;
+      },
+    });
   }
 }

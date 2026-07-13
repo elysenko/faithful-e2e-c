@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { RecipeService } from '../../core/services/recipe.service';
 import { RecipeInput } from '../../core/models';
+import { parseFormError } from '../../core/http-error';
 import { RecipeCardComponent } from '../../shared/recipe-card/recipe-card.component';
 import { RecipeFormComponent } from '../../shared/recipe-form/recipe-form.component';
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
@@ -26,6 +28,10 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   /** Local text bound to the search box (kept in sync with ?q via debounce). */
   searchText = '';
   modalOpen = signal(false);
+
+  /** Server-side validation feedback for the add-recipe form. */
+  readonly formError = signal<string | null>(null);
+  readonly formFieldErrors = signal<Record<string, string> | null>(null);
 
   private readonly searchInput$ = new Subject<string>();
   private sub = new Subscription();
@@ -85,6 +91,8 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   }
 
   closeModal(): void {
+    this.formError.set(null);
+    this.formFieldErrors.set(null);
     this.applyQueryParam('modal', null);
   }
 
@@ -100,13 +108,22 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   }
 
   createRecipe(input: RecipeInput): void {
+    this.formError.set(null);
+    this.formFieldErrors.set(null);
     this.sub.add(
       this.recipeService.create(input).subscribe({
         next: () => {
           this.closeModal();
           this.reload();
         },
-        error: () => undefined,
+        // Surface the backend's { error, fields } response as inline form errors
+        // instead of silently dropping it (a DB 503 still flows to the banner).
+        error: (err: HttpErrorResponse) => {
+          if (err?.status === 503) return;
+          const parsed = parseFormError(err);
+          this.formFieldErrors.set(parsed.fields);
+          this.formError.set(parsed.message);
+        },
       }),
     );
   }

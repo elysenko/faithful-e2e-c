@@ -67,6 +67,8 @@
       <div class="modal__body">
         <app-recipe-form
           submitLabel="Save recipe"
+          [serverError]="formError()"
+          [fieldErrors]="formFieldErrors()"
           (save)="createRecipe($event)"
           (cancel)="closeModal()"
         ></app-recipe-form>
