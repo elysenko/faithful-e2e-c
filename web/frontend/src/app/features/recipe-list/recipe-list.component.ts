@@ -30,9 +30,9 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   private readonly searchInput$ = new Subject<string>();
   private sub = new Subscription();
 
-  readonly visibleRecipes = computed(() =>
-    this.recipeService.query(this.search(), this.favoritesOnly()),
-  );
+  // Recipes are filtered server-side (DB, index-backed); the store signal already
+  // holds only the rows matching the current search + favorites query params.
+  readonly visibleRecipes = computed(() => this.recipeService.recipes());
   readonly totalCount = computed(() => this.recipeService.recipes().length);
   readonly hasQuery = computed(() => this.search().trim().length > 0 || this.favoritesOnly());
 
@@ -41,9 +41,9 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Load the recipe list from the backend into the store signal.
-    this.sub.add(this.recipeService.refresh().subscribe({ error: () => undefined }));
-
+    // Reload from the backend whenever the search / favorites query params change
+    // (fires immediately with the current params → covers the initial load too),
+    // so filtering is performed DB-side rather than in-memory.
     this.sub.add(
       this.route.queryParamMap.subscribe((params) => {
         const q = params.get('q') ?? '';
@@ -51,6 +51,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
         this.searchText = q;
         this.favoritesOnly.set(params.get('fav') === '1');
         this.modalOpen.set(params.get('modal') === 'new');
+        this.reload();
       }),
     );
 
@@ -88,15 +89,34 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   }
 
   onFavorite(id: string): void {
-    this.sub.add(this.recipeService.toggleFavorite(id).subscribe({ error: () => undefined }));
+    // Reload after the toggle so the server-side favorites filter stays accurate
+    // (an un-favorited recipe must drop out while the filter is on).
+    this.sub.add(
+      this.recipeService.toggleFavorite(id).subscribe({
+        next: () => this.reload(),
+        error: () => undefined,
+      }),
+    );
   }
 
   createRecipe(input: RecipeInput): void {
     this.sub.add(
       this.recipeService.create(input).subscribe({
-        next: () => this.closeModal(),
+        next: () => {
+          this.closeModal();
+          this.reload();
+        },
         error: () => undefined,
       }),
+    );
+  }
+
+  /** Fetch the recipe list from the backend with the current search + favorites filter. */
+  private reload(): void {
+    this.sub.add(
+      this.recipeService
+        .refresh(this.search(), this.favoritesOnly())
+        .subscribe({ error: () => undefined }),
     );
   }
 

@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Recipe, RecipeInput } from '../models';
 import { environment } from '../../../environments/environment';
@@ -19,23 +19,24 @@ export class RecipeService {
 
   readonly favoriteCount = computed(() => this.recipes().filter((r) => r.favorite).length);
 
-  /** GET /api/recipes — load the full set into the signal. */
-  refresh(): Observable<Recipe[]> {
-    return this.http.get<Recipe[]>(this.base).pipe(tap((list) => this.recipes.set(list)));
+  /**
+   * GET /api/recipes?q=&favorite=true — load the server-filtered set into the
+   * signal. Search and favorites filtering happen DB-side (index-backed) so the
+   * `q` and favorites-only state are passed straight through as query params.
+   */
+  refresh(q = '', favoritesOnly = false): Observable<Recipe[]> {
+    const term = q.trim();
+    let params = new HttpParams();
+    if (term) params = params.set('q', term);
+    if (favoritesOnly) params = params.set('favorite', 'true');
+    return this.http
+      .get<Recipe[]>(this.base, { params })
+      .pipe(tap((list) => this.recipes.set(list)));
   }
 
   /** GET /api/recipes/:id — fetch a single recipe (used for deep links). */
   getOne(id: string): Observable<Recipe> {
     return this.http.get<Recipe>(`${this.base}/${id}`);
-  }
-
-  /** Client-side filter mirroring GET /api/recipes?q=&favorite=true over loaded data. */
-  query(q: string, favoritesOnly: boolean): Recipe[] {
-    const term = q.trim().toLowerCase();
-    return this.recipes()
-      .filter((r) => (favoritesOnly ? r.favorite : true))
-      .filter((r) => (term ? r.title.toLowerCase().includes(term) : true))
-      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
   getById(id: string): Recipe | undefined {

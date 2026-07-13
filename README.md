@@ -16,6 +16,17 @@ favorites, and 401/404/503 handling. Runs on **port 8080**.
 > `backend/` and `web/backend/` are leftover scaffold templates and are **not**
 > built or deployed (excluded via `.dockerignore`).
 
+### Deviation from the original plan (SPA framework)
+
+The original plan specified a **React (Vite + React Router)** SPA under `client/`.
+This implementation deliberately uses **Angular** (`web/frontend/`) instead. The
+choice is intentional and satisfies every functional requirement of the spec —
+routed pages with per-route `data.flow` nodes, deep-linkable state via query
+params (`?q=`, `?fav=1`, `?modal=new`, `?edit=1`), a JWT `HttpInterceptor` +
+route guard for `full_auth`, and 401→login / 503→banner handling. The
+single-container contract is unchanged: the Express API (`server/`) still serves
+the compiled SPA on port 8080. No React/Vite code remains in the build path.
+
 ## Environment variables
 
 | Var              | Purpose                                | Default     |
