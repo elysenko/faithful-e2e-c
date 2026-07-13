@@ -67,13 +67,24 @@ export class AuthService {
       next: () => undefined,
       error: () => undefined,
     });
+    this.clearSession();
+    this.router.navigate(['/login']);
+  }
+
+  /**
+   * Clear the local session (storage + signals) WITHOUT any HTTP call or
+   * navigation. Used by the HTTP interceptor on a 401 so `isLoggedIn()`
+   * immediately reflects the unauthenticated state. Kept HTTP-free so it can
+   * run inside the interceptor without re-triggering the guarded
+   * /auth/logout endpoint (which would itself 401 and loop).
+   */
+  clearSession(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem('access_token');
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem('isAuthenticated');
     this._token.set(null);
     this._user.set(null);
-    this.router.navigate(['/login']);
   }
 
   private setSession(user: User, token: string): void {
