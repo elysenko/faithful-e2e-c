@@ -48,8 +48,8 @@ export class LayoutComponent implements OnInit {
   constructor(public auth: AuthService) {}
 
   ngOnInit(): void {
-    // Hydrate the header/nav from the live authenticated user (GET /auth/me).
-    // Errors keep the cached user (e.g. demo mode) — no redirect here.
+    // Hydrate the header/nav from the live authenticated user
+    // (GET /auth/refresh-token). Demo Mode no-ops; errors keep the cached user.
     if (this.auth.isLoggedIn()) {
       this.auth.refresh().subscribe({ error: () => {} });
     }

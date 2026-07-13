@@ -13,7 +13,7 @@
       (save)="onSave($event)"
       (cancelForm)="onCancel()"
     />
-  } @else {
+  } @else if (loaded()) {
     <div class="state card card-pad">
       <span class="state-icon" aria-hidden="true">🔎</span>
       <h2>Recipe not found</h2>

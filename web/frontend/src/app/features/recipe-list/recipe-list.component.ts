@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { RecipeCard } from '../../core/models';
+import { RecipeService } from '../../core/services/recipe.service';
 
 /**
  * Recipe box home. Renders the signed-in cook's recipes as cards (title +
@@ -18,18 +19,10 @@ import { RecipeCard } from '../../core/models';
   styleUrl: './recipe-list.component.css',
 })
 export class RecipeListComponent implements OnInit {
-  // Data contract: mock cards live in an array signal so the pipeline can clear
-  // this and wire GET /api/recipes in ngOnInit().
-  readonly recipes = signal<RecipeCard[]>([
-    { id: 'r1', title: 'Weeknight Tomato Basil Pasta', isFavorite: true },
-    { id: 'r2', title: 'Grandma’s Cinnamon Rolls', isFavorite: true },
-    { id: 'r3', title: 'Smoky Black Bean Tacos', isFavorite: false },
-    { id: 'r4', title: 'Lemon Herb Roast Chicken', isFavorite: true },
-    { id: 'r5', title: 'Creamy Mushroom Risotto', isFavorite: false },
-    { id: 'r6', title: 'Overnight Oats with Berries', isFavorite: false },
-    { id: 'r7', title: 'Thai Green Curry', isFavorite: false },
-    { id: 'r8', title: 'Chewy Chocolate Chip Cookies', isFavorite: true },
-  ]);
+  // Live data: populated from GET /api/recipes in ngOnInit(). Search + favorite
+  // filtering are applied client-side over the full owned set so favoriteCount
+  // and the empty-state stay accurate.
+  readonly recipes = signal<RecipeCard[]>([]);
 
   readonly query = signal('');
   readonly favoritesOnly = signal(false);
@@ -46,13 +39,26 @@ export class RecipeListComponent implements OnInit {
 
   readonly favoriteCount = computed(() => this.recipes().filter((r) => r.isFavorite).length);
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private recipeService: RecipeService,
+  ) {}
 
   ngOnInit(): void {
     // Restore filter state from the URL so the list is deep-linkable.
     const params = this.route.snapshot.queryParamMap;
     this.query.set(params.get('q') ?? '');
     this.favoritesOnly.set(params.get('favorite') === '1');
+    this.load();
+  }
+
+  /** Fetch the signed-in cook's full recipe box (GET /api/recipes). */
+  private load(): void {
+    this.recipeService.list().subscribe({
+      next: (cards) => this.recipes.set(cards),
+      error: () => this.recipes.set([]),
+    });
   }
 
   onSearch(value: string): void {
@@ -80,8 +86,18 @@ export class RecipeListComponent implements OnInit {
   toggleFavorite(card: RecipeCard, event: Event): void {
     event.stopPropagation();
     event.preventDefault();
+    // Optimistic flip; revert if the server rejects so the UI never desyncs.
+    const previous = card.isFavorite;
+    this.applyFavorite(card.id, !previous);
+    this.recipeService.toggleFavorite(card.id).subscribe({
+      next: (res) => this.applyFavorite(card.id, res.isFavorite),
+      error: () => this.applyFavorite(card.id, previous),
+    });
+  }
+
+  private applyFavorite(id: string, isFavorite: boolean): void {
     this.recipes.update((list) =>
-      list.map((r) => (r.id === card.id ? { ...r, isFavorite: !r.isFavorite } : r)),
+      list.map((r) => (r.id === id ? { ...r, isFavorite } : r)),
     );
   }
 

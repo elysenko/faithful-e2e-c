@@ -1,7 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, Role, User } from '../models';
 
@@ -47,24 +47,50 @@ export class AuthService {
       .pipe(tap((res) => this.persist(res)));
   }
 
-  /** Open signup — the first user server-side becomes an admin, later ones users. */
+  /**
+   * Open signup. Maps to the backend `POST /auth/register` contract, which
+   * requires a display name and password confirmation; we derive a friendly
+   * name from the email local-part and mirror the password as confirmation.
+   * The first user server-side becomes an admin, later ones users.
+   */
   signup(email: string, password: string): Observable<AuthResponse> {
+    const local = email.split('@')[0] ?? '';
+    const name = local.length >= 3 ? local : email;
     return this.http
-      .post<AuthResponse>(`${this.apiUrl}/auth/signup`, { email, password })
+      .post<AuthResponse>(`${this.apiUrl}/auth/register`, {
+        name,
+        email,
+        password,
+        passwordconf: password,
+      })
       .pipe(tap((res) => this.persist(res)));
   }
 
   /**
-   * Refresh the authenticated user from the real backend (`GET /auth/me`) and
-   * update the cached signal + localStorage. Resilient: on error (e.g. demo
-   * token, transient failure) the cached user is preserved.
+   * Refresh the authenticated user + token from the real backend
+   * (`GET /auth/refresh-token`, returns `{ user, token }`) and update the
+   * cached signal + localStorage. No-ops in offline Demo Mode; on error the
+   * cached user is preserved.
    */
   refresh(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/auth/me`).pipe(
-      tap((user) => {
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
-        this._user.set(user);
+    if (this.isDemo()) {
+      return new Observable<User>((sub) => {
+        const u = this._user();
+        if (u) sub.next(u);
+        sub.complete();
+      });
+    }
+    return this.http.get<AuthResponse>(`${this.apiUrl}/auth/refresh-token`).pipe(
+      tap((res) => {
+        const token = res.access_token || res.token;
+        if (token) {
+          localStorage.setItem(TOKEN_KEY, token);
+          localStorage.setItem(ACCESS_KEY, token);
+        }
+        localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+        this._user.set(res.user);
       }),
+      map((res) => res.user),
     );
   }
 
@@ -104,5 +130,10 @@ export class AuthService {
 
   token(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  }
+
+  /** True while the offline Demo Mode session is active (no live backend). */
+  isDemo(): boolean {
+    return this.token() === 'demo-token';
   }
 }

@@ -46,7 +46,7 @@
         <button type="button" class="btn btn-danger" (click)="askDelete()">🗑️ Delete</button>
       </footer>
     </article>
-  } @else {
+  } @else if (loaded()) {
     <div class="state card card-pad">
       <span class="state-icon" aria-hidden="true">🔎</span>
       <h2>Recipe not found</h2>
