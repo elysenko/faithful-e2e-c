@@ -7,8 +7,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { validateConfig } from './common/config/env.config';
 import { HealthModule } from './health/health.module';
+import { RecipesModule } from './recipes/recipes.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 @Module({
   imports: [
@@ -28,11 +30,13 @@ import { APP_GUARD } from '@nestjs/core';
     PrismaModule,
     UserModule,
     HealthModule,
+    RecipesModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_FILTER, useClass: AllExceptionsFilter },
   ],
 })
 export class AppModule {}
