@@ -1,0 +1,11 @@
+# Dependencies
+**/node_modules
+
+# Build output
+server/dist
+web/frontend/dist
+web/frontend/.angular
+
+# Env
+.env
+*.local

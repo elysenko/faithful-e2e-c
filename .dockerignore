@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+**/.angular
+**/.git
+backend
+web/backend
+web/Dockerfile.backend
+web/Dockerfile.frontend
+web/nginx.conf
+*.md
+.pipeline
+mockups
+k8s
